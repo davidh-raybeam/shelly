@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+
+require 'shellwords'
+
+require 'shelly'
+include Shelly
+
+def print_usage
+  puts "Usage: #{$0} [--script] COMMAND"
+end
+
+def output_script(filename, command)
+  open(filename, 'w+') do |out|
+    out.write <<-EOF
+#!/usr/bin/env ruby
+
+require 'shelly'
+include Shelly
+
+## To include custom commands, use the following as a template:
+# command 'foo',
+#     description: 'A brief description of the foo command',
+#     usage: '\\foo ARG1 [ARG2]' do |shell, argstring|
+#   #
+#   #  Your code goes here.
+#   #  `shell` is a Shelly::Interpreter object. At the moment, the only method
+#   #    it supports is exit!, which causes the interpreter to exit gracefully.
+#   #  `argstring` is a string containing everything after the command name.
+#   #    For example, the command "\\foo arg1 arg2 arg3" would receive an
+#   #    argstring of "arg1 arg2 arg3"
+#   #
+# end
+
+## Uncomment to specify a custom prompt string:
+# prompt '> '
+
+## Uncomment to add a command suffix:
+# suffix '| less'
+
+shelly '#{command}'
+EOF
+  end
+end
+
+# ================
+# = Main routine =
+# ================
+if ARGV.empty?
+  print_usage
+  exit 1
+elsif ARGV[0] == '--script'
+  ARGV.shift
+  if ARGV.empty?
+    print_usage
+    exit 1
+  end
+  
+  script_name = "./#{File.basename(ARGV[0])}.shelly"
+  command = ARGV.shelljoin
+  
+  output_script(script_name, command)
+else
+  command = ARGV.shelljoin
+  
+  shelly command
+end

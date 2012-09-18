@@ -1,6 +1,7 @@
 # Shelly
 
-TODO: Write a gem description
+Shelly is a small tool designed to create interactive shells out of common
+terminal commands.
 
 ## Installation
 
@@ -16,14 +17,19 @@ Or install it yourself as:
 
     $ gem install shelly
 
+### Dependencies
+
+Shelly requires ruby1.9 (or ruby1.8 with a backported `shellwords` library)
+built with readline support.
+
 ## Usage
 
-TODO: Write usage instructions here
+To make a shell with shelly, simply invoke it with the prefix you'd like each
+command to have. For example,
 
-## Contributing
+    $ shelly git
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+starts an interactive session where each command entered is prefixed with `git`
+and run in your default shell.
+
+To create an executable script 
