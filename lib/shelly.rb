@@ -158,8 +158,10 @@ end
 # ====================
 # = Default Commands =
 # ====================
-module Shelly::Commands
-  include Shelly
+class Shelly::CommandContainer
+  class <<self
+    include Shelly
+  end
   
   # ========
   # = Quit =
