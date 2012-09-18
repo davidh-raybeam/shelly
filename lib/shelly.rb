@@ -25,7 +25,9 @@ module Shelly
     def initialize
       self.prefix = nil
       self.suffix = ''
-      self.prompt = nil
+      self.prompt = Proc.new do |c|
+        "[Shelly: #{self.prefix}]#{c ? '|' : '>'} "
+      end
       @commands = {}
       @exit = false
       @running = false
@@ -51,7 +53,6 @@ module Shelly
       # Setup the prompt
       if STDIN.tty?
         # Setup Readline
-        self.prompt ||= "[Shelly: #{self.prefix}]> "
         Readline.completion_append_character = ''
         Readline.completion_proc = Proc.new do |str|
           completions = Dir[str+'*'].grep(/^#{Regexp.escape(str)}/)
@@ -67,13 +68,15 @@ module Shelly
           completions
         end
         
-        get_line = Proc.new { Readline.readline(self.prompt, true).chomp }
+        get_line = Proc.new do |c|
+          Readline.readline(self.prompt[c], true).chomp
+        end
         
         # Setup the terminal
         stty_save = `stty -g`.chomp
         cleanup = Proc.new { system('stty', stty_save) }
       else
-        get_line = Proc.new { STDIN.gets.chomp }
+        get_line = Proc.new { |c| STDIN.gets.chomp }
         cleanup  = Proc.new {}
       end
       
@@ -83,7 +86,7 @@ module Shelly
       # Do it!
       full_line = ''
       begin
-        while (!@exit) and line = get_line[]
+        while (!@exit) and line = get_line[! full_line.empty?]
           full_line += line
           if full_line =~ /^.*\\$/
             # Line ends with a backslash, so wait for more input
@@ -145,8 +148,12 @@ module Shelly
     Shelly::Interpreter.get_instance.suffix = suffix
   end
   
-  def prompt(prompt)
-    Shelly::Interpreter.get_instance.prompt = prompt
+  def prompt(prompt='> ')
+    if block_given?
+      Shelly::Interpreter.get_instance.prompt = Proc.new
+    else
+      Shelly::Interpreter.get_instance.prompt = Proc.new { |c| prompt }
+    end
   end
   
   def shelly(prefix)

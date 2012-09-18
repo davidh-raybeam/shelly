@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+
+require 'shelly'
+include Shelly
+
+require 'fileutils'
+include FileUtils
+
+
+command 'cd',
+    description: 'Changes the working directory.',
+    usage: '\cd DIRECTORY' do |shell, argstring|
+  argstring.strip!
+  if argstring.length > 0
+    begin
+      cd argstring
+    rescue
+      STDERR.puts "No such directory: #{argstring}"
+    end
+  else
+    STDERR.puts "Must specify a directory to switch to."
+  end
+end
+
+
+prompt do |continuation|
+  `git status`
+  is_git_repo = $? == 0
+  
+  if continuation
+    prompt_char = '|'
+  elsif is_git_repo
+    prompt_char = "\u00b1"
+  else
+    prompt_char = '$'
+  end
+  
+  if is_git_repo
+    branch = nil
+    `git branch`.each_line do |line|
+      if line =~ /^\* (.*)$/
+        branch = $1
+      end
+    end
+    
+    branch ||= '(???)'
+    branch = ':' + branch
+  else
+    branch = ''
+  end
+  
+  dir = File.basename(getwd)
+  "[#{dir}#{branch}]#{prompt_char} "
+end
+
+
+shelly 'git'
