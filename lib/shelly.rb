@@ -88,8 +88,9 @@ module Shelly
       begin
         while (!@exit) and line = get_line[! full_line.empty?]
           full_line += line
-          if full_line =~ /^.*\\$/
+          if full_line =~ /^(.*)\\$/
             # Line ends with a backslash, so wait for more input
+            full_line = $1
             next
           elsif full_line =~ /^\\([a-z]+)\s*(.*)$/
             # Special command. Look it up and execute it
