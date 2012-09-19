@@ -24,7 +24,7 @@ end
 
 
 prompt do |continuation|
-  `git status`
+  `git status &>/dev/null`
   is_git_repo = $? == 0
   
   if continuation
