@@ -22,6 +22,12 @@ command 'cd',
   end
 end
 
+command 'gitx',
+    description: 'Opens GitX.',
+    usage: '\gitx' do |shell, argstring|
+  system 'gitx'
+end
+
 
 prompt do |continuation|
   `git status &>/dev/null`
