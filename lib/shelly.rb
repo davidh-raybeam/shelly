@@ -111,6 +111,10 @@ module Shelly
             else
               STDERR.puts "Unknown special command '#{command_name}'"
             end
+          elsif full_line =~ /^!(.*)$/
+            # Shell command
+            command = $1.strip
+            system(command) unless command.empty?
           else
             # Run it!
             system("#{self.prefix} #{full_line} #{self.suffix}")
@@ -192,15 +196,6 @@ class Shelly::CommandContainer
       usage: '\quit' do |shell, argstring|
     shell.exit!
   end
-  
-  # =========
-  # = Shell =
-  # =========
-  command 'shell',
-      description: 'Runs a command verbatim on your default shell',
-      usage: '\shell COMMAND' do |shell, argstring|
-    system(argstring.strip)
-  end
 
   # ========
   # = Help =
@@ -214,7 +209,12 @@ class Shelly::CommandContainer
     argstring.strip!
     if argstring.length > 0
       # Display a help message for the given command
-      if short_forms.keys.include?(argstring)
+      if argstring == '!'
+        puts "!"
+        puts "Aliases: (none)"
+        puts "Usage: !COMMAND"
+        puts "Runs COMMAND verbatim on your default shell."
+      elsif short_forms.keys.include?(argstring)
         cmd = commands[short_forms[argstring]]
         puts "\\#{cmd.name}"
         puts "Aliases: #{short_forms.keys_for(cmd.name).sort.join ', '}"
@@ -229,6 +229,7 @@ class Shelly::CommandContainer
       commands.each_value do |cmd|
         puts " \\#{cmd.name}"
       end
+      puts " !"
     end
   end
 end
