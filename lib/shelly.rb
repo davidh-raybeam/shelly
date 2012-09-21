@@ -31,6 +31,7 @@ module Shelly
       @commands = {}
       @exit = false
       @running = false
+      @config_file_loaded = false
     end
     
     def add_command(cmd)
@@ -40,6 +41,14 @@ module Shelly
       end
       
       @commands[cmd.name] = cmd
+    end
+    
+    def load_config_file!
+      return if @config_file_loaded
+      @config_file_loaded = true
+      
+      filename = File.join(File.expand_path('~'), '.shellyrc')
+      load filename, true
     end
     
     def run!
@@ -155,6 +164,10 @@ module Shelly
     else
       Shelly::Interpreter.get_instance.prompt = Proc.new { |c| prompt }
     end
+  end
+  
+  def load_config_file
+    Shelly::Interpreter.get_instance.load_config_file!
   end
   
   def shelly(prefix)

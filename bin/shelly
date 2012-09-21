@@ -37,6 +37,9 @@ include Shelly
 ## Uncomment to add a command suffix:
 # suffix '| less'
 
+## Uncomment to read in ~/.shellyrc as a config file
+# load_config_file
+
 shelly '#{command}'
 EOF
   end
@@ -61,6 +64,8 @@ elsif ARGV[0] == '--script'
   output_script(script_name, command)
 else
   command = ARGV.shelljoin
+  
+  load_config_file
   
   shelly command
 end
