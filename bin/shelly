@@ -37,8 +37,11 @@ include Shelly
 ## Uncomment to add a command suffix:
 # suffix '| less'
 
-## Uncomment to read in ~/.shellyrc as a config file
-# load_config_file
+## Look for user config files in ~/.#{filename}rc
+## Options:
+##  - Comment to disable user config files
+##  - Remove the filename argument to use the default (~/.shellyrc)
+load_config_file '.#{filename}rc'
 
 shelly '#{command}'
 EOF
@@ -58,7 +61,7 @@ elsif ARGV[0] == '--script'
     exit 1
   end
   
-  script_name = "./#{File.basename(ARGV[0])}.shelly"
+  script_name = "#{File.basename(ARGV[0])}.shelly"
   command = ARGV.shelljoin
   
   output_script(script_name, command)

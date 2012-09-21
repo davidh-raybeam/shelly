@@ -7,6 +7,7 @@ require 'fileutils'
 include FileUtils
 
 
+##### COMMANDS
 command 'cd',
     description: 'Changes the working directory.',
     usage: '\cd DIRECTORY' do |shell, argstring|
@@ -35,6 +36,11 @@ command 'gitx',
 end
 
 
+##### PROMPT
+# Prompt is "[DIR:BRANCH]% "
+#   where DIR is the basename of the cwd
+#         BRANCH is the current branch (or blank if outside a git repo)
+#         % is a +/- character if inside a git repo, $ otherwise
 prompt do |continuation|
   `git status &>/dev/null`
   is_git_repo = $? == 0
@@ -64,6 +70,11 @@ prompt do |continuation|
   dir = File.basename(getwd)
   "[#{dir}#{branch}]#{prompt_char} "
 end
+
+
+##### USER CONFIG
+# Load user config from ~/.gitshrc
+load_config_file '.gitshrc'
 
 
 shelly 'git'

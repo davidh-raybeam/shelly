@@ -47,13 +47,11 @@ module Shelly
       end
     end
     
-    def load_config_file!
+    def load_config_file(filename)
       return if @config_file_loaded
       @config_file_loaded = true
       
-      filename = File.join(File.expand_path('~'), '.shellyrc')
       if File.exists? filename
-        puts "Loading config from #{filename}..."
         load filename, true
       end
     end
@@ -177,8 +175,9 @@ module Shelly
     end
   end
   
-  def load_config_file
-    Shelly::Interpreter.get_instance.load_config_file!
+  def load_config_file(rcname='.shellyrc')
+    filename = File.join(File.expand_path('~'), rcname)
+    Shelly::Interpreter.get_instance.load_config_file(filename)
   end
   
   def shelly(prefix)
