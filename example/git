@@ -12,10 +12,16 @@ command 'cd',
     usage: '\cd DIRECTORY' do |shell, argstring|
   argstring.strip!
   if argstring.length > 0
-    begin
-      cd argstring
-    rescue
-      STDERR.puts "No such directory: #{argstring}"
+    argstring = File.expand_path argstring
+    
+    if File.exists?(argstring) and File.directory?(argstring)
+      begin
+        cd argstring
+      rescue
+        STDERR.puts "Error cding to #{argstring}."
+      end
+    else
+      STDERR.puts "#{argstring} doesn't exist or isn't a directory."
     end
   else
     STDERR.puts "Must specify a directory to switch to."
