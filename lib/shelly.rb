@@ -52,7 +52,10 @@ module Shelly
       @config_file_loaded = true
       
       filename = File.join(File.expand_path('~'), '.shellyrc')
-      load filename, true
+      if File.exists? filename
+        puts "Loading config from #{filename}..."
+        load filename, true
+      end
     end
     
     def run!
