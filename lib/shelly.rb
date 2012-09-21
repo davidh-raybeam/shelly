@@ -40,7 +40,11 @@ module Shelly
         raise ArgumentError.new "Already have a command named '#{cmd.name}'."
       end
       
-      @commands[cmd.name] = cmd
+      if cmd.name =~ /^[a-z0-9]+$/i
+        @commands[cmd.name] = cmd
+      else
+        raise ArgumentError.new "Command names must be alphanumeric (given: '#{cmd.name}')."
+      end
     end
     
     def load_config_file!
@@ -101,7 +105,7 @@ module Shelly
             # Line ends with a backslash, so wait for more input
             full_line = $1
             next
-          elsif full_line =~ /^\\([a-z]+)\s*(.*)$/
+          elsif full_line =~ /^\\([a-zA-Z0-9]+)\s*(.*)$/
             # Special command. Look it up and execute it
             command_name = $1
             argstring = $2
