@@ -20,7 +20,7 @@ module Shelly
   # = The Interpreter =
   # ===================
   class Interpreter
-    attr_accessor :prefix, :suffix, :prompt
+    attr_accessor :prefix, :suffix, :prompt, :quote_input
     
     def initialize
       self.quote_input = false
