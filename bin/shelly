@@ -37,6 +37,9 @@ include Shelly
 ## Uncomment to add a command suffix:
 # suffix '| less'
 
+## Uncomment to quote all user input
+# quote_input
+
 ## Look for user config files in ~/.#{filename}rc
 ## Options:
 ##  - Comment to disable user config files

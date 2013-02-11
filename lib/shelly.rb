@@ -23,6 +23,7 @@ module Shelly
     attr_accessor :prefix, :suffix, :prompt
     
     def initialize
+      self.quote_input = false
       self.prefix = nil
       self.suffix = ''
       self.prompt = Proc.new do |c|
@@ -96,6 +97,7 @@ module Shelly
       
       # Set up command abbreviations
       command_names = Abbrev.abbrev(@commands.keys)
+      quote = self.quote_input ? '"' : ''
       
       # Do it!
       full_line = ''
@@ -122,7 +124,7 @@ module Shelly
             system(command) unless command.empty?
           else
             # Run it!
-            system("#{self.prefix} #{full_line} #{self.suffix}")
+            system("#{self.prefix} #{quote}#{full_line}#{quote} #{self.suffix}")
           end
           full_line = ''
         end
@@ -178,6 +180,10 @@ module Shelly
   def load_config_file(rcname='.shellyrc')
     filename = File.join(File.expand_path('~'), rcname)
     Shelly::Interpreter.get_instance.load_config_file(filename)
+  end
+  
+  def quote_input(quote=true)
+    Shelly::Interpreter.get_instance.quote_input = quote
   end
   
   def shelly(prefix)
