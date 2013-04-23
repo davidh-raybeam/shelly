@@ -37,8 +37,28 @@ include Shelly
 ## Uncomment to add a command suffix:
 # suffix '| less'
 
-## Uncomment to quote all user input
+## Uncomment to quote all user input:
 # quote_input
+
+## Tab-completion setup:
+tab_complete :filenames
+## You may pass a block to the above function. If you do, it should take a
+## single argument (the partial word as a string) and return a list of
+## strings (possible completions).
+## Allowed values for the symbol are:
+##   :filenames (block optional)
+##     Complete file and directory names and evaluate the block (if given),
+##     adding its results to the matching files
+##   :filenames_before (block required)
+##     Attempt to match file and directory names; if none match, use the block
+##     instead.
+##   :filenames_after (block required)
+##     Evaluate the block; if it returns an empty list, match files and
+##     directories instead.
+##   :only (block required)
+##     Evaluate the block only
+##   :none (block optional but ignored if provided)
+##     Disable tab completion
 
 ## Look for user config files in ~/.#{filename}rc
 ## Options:

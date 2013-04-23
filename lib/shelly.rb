@@ -228,7 +228,7 @@ module Shelly
     Shelly::Interpreter.get_instance.quote_input = quote
   end
   
-  def autocomplete(policy)
+  def tab_complete(policy)
     policy = policy.to_s
     if %w(filenames filenames_before filenames_after only none).include?(policy)
       Shelly::Interpreter.get_instance.complete = policy.to_sym
