@@ -32,4 +32,4 @@ command to have. For example,
 starts an interactive session where each command entered is prefixed with `git`
 and run in your default shell.
 
-To create an executable script 
+To create an executable script, run `shelly --script COMMAND_PREFIX`.
