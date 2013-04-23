@@ -89,7 +89,6 @@ module Shelly
       
       # Set up command abbreviations
       command_names = Abbrev.abbrev(@commands.keys)
-      quote = self.quote_input ? '"' : ''
       
       # Do it!
       full_line = ''
@@ -116,8 +115,10 @@ module Shelly
             system(command) unless command.empty?
           else
             # Run it!
-            # TODO -- how about we properly quote it, though?
-            system("#{self.prefix} #{quote}#{full_line}#{quote} #{self.suffix}")
+            if self.quote_input
+              full_line = full_line.shellescape
+            end
+            system("#{self.prefix} #{full_line} #{self.suffix}")
           end
           full_line = ''
         end
