@@ -20,12 +20,14 @@ module Shelly
   # = The Interpreter =
   # ===================
   class Interpreter
-    attr_accessor :prefix, :suffix, :prompt, :quote_input
+    attr_accessor :prefix, :suffix, :prompt, :quote_input, :complete, :custom_complete
     
     def initialize
       self.quote_input = false
       self.prefix = nil
       self.suffix = ''
+      self.complete = :filenames
+      self.custom_complete = Proc.new { |word| [] }
       self.prompt = Proc.new do |c|
         "[Shelly: #{self.prefix}]#{c ? '|' : '>'} "
       end
@@ -68,19 +70,9 @@ module Shelly
       # Setup the prompt
       if STDIN.tty?
         # Setup Readline
-        Readline.completion_append_character = ''
-        Readline.completion_proc = Proc.new do |str|
-          completions = Dir[str+'*'].grep(/^#{Regexp.escape(str)}/)
-          if completions.length == 1
-            result = completions[0]
-            if File.directory? result
-              result += '/'
-            else
-              result += ' '
-            end
-            completions = [result]
-          end
-          completions
+        if self.complete != :none
+          Readline.completion_append_character = ''
+          Readline.completion_proc = completion_proc
         end
         
         get_line = Proc.new do |c|
@@ -124,6 +116,7 @@ module Shelly
             system(command) unless command.empty?
           else
             # Run it!
+            # TODO -- how about we properly quote it, though?
             system("#{self.prefix} #{quote}#{full_line}#{quote} #{self.suffix}")
           end
           full_line = ''
@@ -138,6 +131,55 @@ module Shelly
     
     def exit!
       @exit = true
+    end
+    
+    private
+    def complete_filenames(partial)
+      completions = Dir[partial + '*'].grep(/^#{Regexp.escape(str)}/)
+      if completions.length == 1
+        result = completions[0]
+        if File.directory? result
+          result += '/'
+        else
+          result += ' '
+        end
+        completions = [result]
+      end
+      completions
+    end
+    
+    def completion_proc
+      if @_proc_map.nil?
+        @_proc_map = {
+          :filenames => Proc.new do |word|
+            complete_filenames(word) + self.custom_complete[word]
+          end,
+          :filenames_before => Proc.new do |word|
+            results = complete_filenames(word)
+            if results.count == 0
+              self.custom_complete[word]
+            else
+              results
+            end
+          end,
+          :filenames_after => Proc.new do |word|
+            results = self.custom_complete[word]
+            if results.count == 0
+              complete_filenames(word)
+            else
+              results
+            end
+          end,
+          :only => Proc.new do |word|
+            self.custom_complete[word]
+          end,
+          :none => Proc.new do |word|
+            []
+          end
+        }
+      end
+      
+      @_proc_map[self.complete]
     end
     
     
@@ -184,6 +226,16 @@ module Shelly
   
   def quote_input(quote=true)
     Shelly::Interpreter.get_instance.quote_input = quote
+  end
+  
+  def autocomplete(policy)
+    policy = policy.to_s
+    if %w(filenames filenames_before filenames_after only none).include?(policy)
+      Shelly::Interpreter.get_instance.complete = policy.to_sym
+      if block_given?
+        Shelly::Interpreter.get_instance.custom_complete = proc.new
+      end
+    end
   end
   
   def shelly(prefix)
