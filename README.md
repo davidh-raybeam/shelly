@@ -5,17 +5,9 @@ terminal commands.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'shelly'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install shelly
+To install Shelly, clone this repo, then run `rake install` from its root.
+Alternatively, run `rake build` to generate a gem in pkg/shelly-VERSION.gem and
+install that normally.
 
 ### Dependencies
 
