@@ -140,6 +140,7 @@ module Shelly
     
     private
     def complete_filenames(partial)
+      return Dir['*'] if partial == '' # empty string expands to all files in the current directory
       full_path = File.expand_path(partial)
       full_path += '/' if File.directory? full_path and partial.end_with? '/'
       completions = Dir[full_path + '*']
