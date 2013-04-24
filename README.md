@@ -9,6 +9,11 @@ To install Shelly, clone this repo, then run `rake install` from its root.
 Alternatively, run `rake build` to generate a gem in pkg/shelly-VERSION.gem and
 install that normally.
 
+If you need to include Shelly in one of your projects, you can add the following
+to your Gemfile:
+
+    gem 'shelly', :git => 'git://github.com/davidh-raybeam/shelly.git'
+
 ### Dependencies
 
 Shelly requires ruby1.9 (or ruby1.8 with a backported `shellwords` library)
