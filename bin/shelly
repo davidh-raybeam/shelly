@@ -6,7 +6,20 @@ require 'shelly'
 include Shelly
 
 def print_usage
-  puts "Usage: #{$0} [--script] COMMAND"
+  puts <<-USAGE
+Shelly version #{VERSION}
+Usage:
+  shelly -h | --help
+      Print this message and exit
+  shelly -v | --version
+      Print the version number and exit
+  shelly COMMAND
+      Starts a Shelly interpreter with a prefix of COMMAND
+  shelly --script COMMAND
+      Outputs a ruby script in the current directory which will run a Shelly
+      shell with a prefix of COMMAND. This can be used to define custom commands
+      or tab completion handlers
+  USAGE
 end
 
 def output_script(filename, command)
@@ -77,6 +90,10 @@ end
 if ARGV.empty?
   print_usage
   exit 1
+elsif %w{-v --version}.include? ARGV[0]
+  puts VERSION
+elsif %w{-h --help}.include? ARGV[0]
+  print_usage
 elsif ARGV[0] == '--script'
   ARGV.shift
   if ARGV.empty?
