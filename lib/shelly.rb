@@ -152,7 +152,7 @@ module Shelly
         end
         completions = [result]
       end
-      completions.collect { |name| name.sub %r/^#{full_path}/, partial }
+      completions.collect { |name| name.sub %r/^#{Regexp.escape full_path}/, partial }
     end
     
     def completion_proc
