@@ -70,8 +70,12 @@ module Shelly
       # Setup the prompt
       if STDIN.tty?
         # Setup Readline
-        if self.complete != :none
-          Readline.completion_append_character = ''
+        Readline.completion_append_character = ''
+        if self.complete == :none
+          Readline.completion_proc = Proc.new do |s|
+            []
+          end
+        else
           Readline.completion_proc = completion_proc
         end
         
@@ -136,7 +140,9 @@ module Shelly
     
     private
     def complete_filenames(partial)
-      completions = Dir[partial + '*'].grep(/^#{Regexp.escape(str)}/)
+      full_path = File.expand_path(partial)
+      full_path += '/' if File.directory? full_path and partial.end_with? '/'
+      completions = Dir[full_path + '*']
       if completions.length == 1
         result = completions[0]
         if File.directory? result
@@ -146,7 +152,7 @@ module Shelly
         end
         completions = [result]
       end
-      completions
+      completions.collect { |name| name.sub %r/^#{full_path}/, partial }
     end
     
     def completion_proc
@@ -234,7 +240,7 @@ module Shelly
     if %w(filenames filenames_before filenames_after only none).include?(policy)
       Shelly::Interpreter.get_instance.complete = policy.to_sym
       if block_given?
-        Shelly::Interpreter.get_instance.custom_complete = proc.new
+        Shelly::Interpreter.get_instance.custom_complete = Proc.new
       end
     end
   end
