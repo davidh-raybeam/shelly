@@ -71,6 +71,16 @@ prompt do |continuation|
   "[#{dir}#{branch}]#{prompt_char} "
 end
 
+# Add support for tab completion of branch names
+tab_complete :filenames do |word|
+  branch_names = []
+  git_branch = `git branch 2>/dev/null`
+  if $? == 0
+    branch_names = git_branch.split(/\n/).collect { |l| l.sub /^(\*| ) /, '' }
+    branch_names = branch_names.collect { |l| l + ' ' } # Append a space
+  end
+  branch_names.grep %r/^#{Regexp.escape word}/
+end
 
 ##### USER CONFIG
 # Load user config from ~/.gitshrc
